@@ -1,0 +1,130 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Home {
+  id           Int      @id @default(autoincrement())
+  address      String
+  city         String
+  listed_date  DateTime @default(now())
+  price        Float
+  propertyType String
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+  images       Image[]
+
+  // Message      Message[]
+}
+
+model Image {
+  id         Int      @id @default(autoincrement())
+  url        String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  home_id Int
+  home    Home @relation(fields: [home_id], references: [id])
+}
+
+model User {
+  id         Int      @id @default(autoincrement())
+  name       String
+  phone      String
+  email      String   @unique
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user_type  UserType
+  // buyer_messages Message[] @relation("buyer_messages")
+  // admin_messages Message[] @relation("admin_messages")
+}
+
+// model Message {
+//   id      Int    @id @default(autoincrement())
+//   message String
+//   // home_id  Int
+//   // // home     Home   @relation(fields: [home_id], references: [id])
+//   // // admin_id Int
+
+//   // // User   User? @relation(fields: [userId], references: [id])
+//   // // userId Int?
+//   // // User   User? @relation(fields: [userId], references: [id])
+//   // // userId Int?
+// }
+
+enum UserType {
+  ADMIN
+  BUYER
+}
+
+model Catogry {
+  catogry_id   Int       @id @default(autoincrement())
+  catogry_name String
+  created_at   DateTime  @default(now())
+  Product      Product[]
+}
+
+model Product {
+  id         Int     @id @default(autoincrement())
+  name       String
+  price      Float
+  catogry_id Int
+  catogry    Catogry @relation(fields: [catogry_id], references: [catogry_id])
+}
+
+model userImage {
+  id         Int      @id @default(autoincrement())
+  url        String
+  created_at DateTime @default(now())
+}
+
+model country {
+  country_id   Int     @id @default(autoincrement())
+  country_name String
+  country_color String
+  state        state[]
+}
+
+model state {
+  state_id   Int    @id @default(autoincrement())
+  state_name String
+
+  city_name  city[]
+  country    country? @relation(fields: [country_id], references: [country_id])
+  country_id Int?
+}
+
+model city {
+  city_id   Int    @id @default(autoincrement())
+  city_name String
+  state     state? @relation(fields: [state_id], references: [state_id])
+  state_id  Int?
+}
+
+model Tables {
+  table_id   Int       @id @default(autoincrement())
+  table_name String
+  column     columns[]
+}
+
+model columns {
+  column_id   Int     @id @default(autoincrement())
+  column_name String
+  column_key  String
+  Tables      Tables? @relation(fields: [table_id], references: [table_id])
+  table_id    Int?
+}
+
+model item {
+  id       Int    @id @default(autoincrement())
+  name     String
+  location String
+}
